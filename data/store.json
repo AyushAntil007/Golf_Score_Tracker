@@ -1,13 +1,357 @@
 {
-  "users": [],
-  "sessions": [],
-  "charities": [
-    { "id": "c1", "name": "First Tee", "description": "Youth golf and life skills", "featured": true },
-    { "id": "c2", "name": "Golf For Good", "description": "Community golf development", "featured": false }
+  "users": [
+    {
+      "id": "u_ffed75df-8ee8-4b31-a462-f44fde3199c3",
+      "email": "ayushantil1111@gmail.com",
+      "name": "",
+      "passwordHash": "4a804c368df10e0727b885ddd670552e50166b73765ea90a7158242f44b0f777",
+      "role": "subscriber"
+    },
+    {
+      "id": "u_98a8abb4-5bc9-4fa7-8b75-fe2c95d2dbb4",
+      "email": "ayushantil111@gmail.com",
+      "name": "",
+      "passwordHash": "4a804c368df10e0727b885ddd670552e50166b73765ea90a7158242f44b0f777",
+      "role": "subscriber"
+    },
+    {
+      "id": "u_fd6ae482-fd2b-49c1-b114-a639366a324a",
+      "email": "ayushantil1191@gmail.com",
+      "name": "Ayush",
+      "passwordHash": "b50edc52e062aa01376e50f69c1b05b586bb6fc557985ba5297ffadad5446034",
+      "role": "subscriber"
+    },
+    {
+      "id": "u_26b26e1f-9475-4b81-a126-b023738a72d4",
+      "email": "ayushantil1101@gmail.com",
+      "name": "Ayush",
+      "passwordHash": "439a1c5484763c6ace79b74c00c67df60a70af3240155724732ec3ba9ea16092",
+      "role": "subscriber"
+    },
+    {
+      "id": "u_bc7a49e6-8ad3-46c7-88c9-2670ac345a2d",
+      "email": "ayushantil7101@gmail.com",
+      "name": "Ayush",
+      "passwordHash": "439a1c5484763c6ace79b74c00c67df60a70af3240155724732ec3ba9ea16092",
+      "role": "admin"
+    },
+    {
+      "id": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "email": "smoke-1774542929033@example.com",
+      "name": "Smoke User",
+      "passwordHash": "46708f23d682fef9aa996ecbb139bfb6c9ffdc039905ad6ad5c85a88b9411d97",
+      "role": "subscriber",
+      "createdAt": "2026-03-26T16:35:29.234Z"
+    },
+    {
+      "id": "u_b61c594f-11a7-49a3-bd48-8b7e94f7bf04",
+      "email": "admin-1774542929033@example.com",
+      "name": "Smoke Admin",
+      "passwordHash": "46708f23d682fef9aa996ecbb139bfb6c9ffdc039905ad6ad5c85a88b9411d97",
+      "role": "admin",
+      "createdAt": "2026-03-26T16:35:29.308Z"
+    },
+    {
+      "id": "u_a9e8db25-e697-4227-8c79-4291d2977aaa",
+      "email": "ayushantil2211@gmail.com",
+      "name": "Ayush",
+      "passwordHash": "c44827ec45355e9a48f90e25fd62b8ba44bd8f9ba57130632880b1d0224f111a",
+      "role": "subscriber"
+    },
+    {
+      "id": "u_5f2de322-59aa-4b96-8bb4-9e0ea4e227a1",
+      "email": "ayushantil211@gmail.com",
+      "name": "Ayush",
+      "passwordHash": "c44827ec45355e9a48f90e25fd62b8ba44bd8f9ba57130632880b1d0224f111a",
+      "role": "admin"
+    }
   ],
-  "subscriptions": [],
-  "scores": [],
-  "draws": [],
+  "sessions": [
+    {
+      "token": "t_10ff67e8-92b3-4a07-ac2f-234fa5cb0d7b",
+      "userId": "u_26b26e1f-9475-4b81-a126-b023738a72d4",
+      "createdAt": "2026-03-26T16:20:11.641Z"
+    },
+    {
+      "token": "t_55a8e479-c467-4f91-b44d-ea633e0993d7",
+      "userId": "u_bc7a49e6-8ad3-46c7-88c9-2670ac345a2d",
+      "createdAt": "2026-03-26T16:21:15.118Z"
+    },
+    {
+      "token": "t_5d854165-ae0c-4d61-bded-2287464d05e7",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "createdAt": "2026-03-26T16:35:29.252Z"
+    },
+    {
+      "token": "t_2cc31085-509a-4d97-a84b-3bb860e59535",
+      "userId": "u_b61c594f-11a7-49a3-bd48-8b7e94f7bf04",
+      "createdAt": "2026-03-26T16:35:29.315Z"
+    },
+    {
+      "token": "t_a48ee150-fa0b-4c48-83b1-0abd36b1d441",
+      "userId": "u_a9e8db25-e697-4227-8c79-4291d2977aaa",
+      "createdAt": "2026-03-26T16:40:43.836Z"
+    },
+    {
+      "token": "t_1870b7b8-43bf-4222-864e-59def009685b",
+      "userId": "u_5f2de322-59aa-4b96-8bb4-9e0ea4e227a1",
+      "createdAt": "2026-03-26T16:41:23.847Z"
+    }
+  ],
+  "charities": [
+    {
+      "id": "c1",
+      "name": "First Tee",
+      "description": "Youth golf and life skills",
+      "featured": true
+    },
+    {
+      "id": "c2",
+      "name": "Golf For Good",
+      "description": "Community golf development",
+      "featured": false
+    }
+  ],
+  "subscriptions": [
+    {
+      "userId": "u_ffed75df-8ee8-4b31-a462-f44fde3199c3",
+      "plan": null,
+      "status": "inactive",
+      "renewalDate": null,
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_98a8abb4-5bc9-4fa7-8b75-fe2c95d2dbb4",
+      "plan": null,
+      "status": "inactive",
+      "renewalDate": null,
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_fd6ae482-fd2b-49c1-b114-a639366a324a",
+      "plan": null,
+      "status": "inactive",
+      "renewalDate": null,
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_26b26e1f-9475-4b81-a126-b023738a72d4",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_bc7a49e6-8ad3-46c7-88c9-2670ac345a2d",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 12,
+      "charityId": "c1",
+      "cancelAtPeriodEnd": false,
+      "gateway": "demo",
+      "createdAt": "2026-03-26T16:35:29.234Z",
+      "updatedAt": "2026-03-26T16:35:29.261Z"
+    },
+    {
+      "userId": "u_b61c594f-11a7-49a3-bd48-8b7e94f7bf04",
+      "plan": null,
+      "status": "inactive",
+      "renewalDate": null,
+      "charityPercent": 10,
+      "charityId": "c1",
+      "cancelAtPeriodEnd": false,
+      "gateway": "demo",
+      "createdAt": "2026-03-26T16:35:29.309Z",
+      "updatedAt": "2026-03-26T16:35:29.309Z"
+    },
+    {
+      "userId": "u_a9e8db25-e697-4227-8c79-4291d2977aaa",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 10,
+      "charityId": "c1"
+    },
+    {
+      "userId": "u_5f2de322-59aa-4b96-8bb4-9e0ea4e227a1",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 10,
+      "charityId": "c1"
+    }
+  ],
+  "scores": [
+    {
+      "id": "s_b3f507d7-a5e5-44cc-bc96-146873ff4d72",
+      "userId": "u_26b26e1f-9475-4b81-a126-b023738a72d4",
+      "score": 32,
+      "playedOn": "2021-06-06",
+      "createdAt": "2026-03-26T16:20:46.851Z"
+    },
+    {
+      "id": "s_2c606927-bdb6-43a9-8b5c-3bfd8b37e0b2",
+      "userId": "u_bc7a49e6-8ad3-46c7-88c9-2670ac345a2d",
+      "score": 33,
+      "playedOn": "2021-06-06",
+      "createdAt": "2026-03-26T16:21:26.546Z"
+    },
+    {
+      "id": "s_1d05c762-8607-4f74-82f3-1c3975e13ba9",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "score": 31,
+      "playedOn": "2026-03-01",
+      "createdAt": "2026-03-26T16:35:29.267Z"
+    },
+    {
+      "id": "s_2f49b142-207c-4eec-abde-ac0ec1bab229",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "score": 33,
+      "playedOn": "2026-03-02",
+      "createdAt": "2026-03-26T16:35:29.273Z"
+    },
+    {
+      "id": "s_a1fa6a82-df24-42e5-b889-7efe4b1360a2",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "score": 34,
+      "playedOn": "2026-03-03",
+      "createdAt": "2026-03-26T16:35:29.280Z"
+    },
+    {
+      "id": "s_6ac6cbc3-4ff8-4025-b77e-bebd4c58162f",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "score": 36,
+      "playedOn": "2026-03-04",
+      "createdAt": "2026-03-26T16:35:29.285Z"
+    },
+    {
+      "id": "s_c08d6daa-78b6-49a4-bde7-433571ba0b5c",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "score": 37,
+      "playedOn": "2026-03-05",
+      "createdAt": "2026-03-26T16:35:29.291Z"
+    },
+    {
+      "id": "s_e06aa17f-16bd-4317-9559-fbe8c1461ce7",
+      "userId": "u_a9e8db25-e697-4227-8c79-4291d2977aaa",
+      "score": 6,
+      "playedOn": "2023-12-02",
+      "createdAt": "2026-03-26T16:41:02.079Z"
+    },
+    {
+      "id": "s_a48af27f-7664-4001-b003-7dba7d7d22a2",
+      "userId": "u_5f2de322-59aa-4b96-8bb4-9e0ea4e227a1",
+      "score": 6,
+      "playedOn": "2023-12-02",
+      "createdAt": "2026-03-26T16:41:34.569Z"
+    }
+  ],
+  "draws": [
+    {
+      "id": "d_676ffcd8-4123-4785-92ee-8d3c05174dc1",
+      "monthKey": "2026-03",
+      "mode": "algorithmic",
+      "status": "simulated",
+      "numbers": [
+        2,
+        14,
+        19,
+        32,
+        33
+      ],
+      "createdAt": "2026-03-26T16:21:32.232Z"
+    },
+    {
+      "id": "d_cdded3a1-0f4a-49fa-a923-cffaaf91b26e",
+      "monthKey": "2026-04",
+      "mode": "algorithmic",
+      "status": "simulated",
+      "numbers": [
+        31,
+        32,
+        33,
+        34,
+        36
+      ],
+      "createdBy": "u_b61c594f-11a7-49a3-bd48-8b7e94f7bf04",
+      "createdAt": "2026-03-26T16:35:29.321Z"
+    },
+    {
+      "id": "d_c9fcfc7f-f847-4c39-b78e-097246b48e0a",
+      "monthKey": "2026-03",
+      "mode": "random",
+      "status": "published",
+      "numbers": [
+        2,
+        17,
+        20,
+        27,
+        28
+      ],
+      "createdAt": "2026-03-26T16:41:44.435Z"
+    }
+  ],
+  "drawEntries": [],
+  "prizePoolSnapshots": [
+    {
+      "id": "pps_82ae97ce-b871-4501-a71b-849e8440284e",
+      "drawId": "d_cdded3a1-0f4a-49fa-a923-cffaaf91b26e",
+      "monthKey": "2026-04",
+      "activeSubscribers": 3,
+      "subscriptionRevenue": 75,
+      "totalPoolBase": 30,
+      "totalPoolWithRollover": 30,
+      "pool5": 12,
+      "pool4": 10.5,
+      "pool3": 7.5,
+      "rolloverFromPrevious": 0,
+      "rolloverCarryForward": 0,
+      "createdAt": "2026-03-26T16:35:29.321Z"
+    }
+  ],
   "winners": [],
-  "donations": []
+  "donations": [
+    {
+      "id": "don_62ee9ab6-c9c9-4f8b-9678-d68c50154f92",
+      "userId": "u_2de7085b-f879-4d80-80d7-6fd3f02be0cc",
+      "charityId": "c1",
+      "amount": 3,
+      "source": "subscription",
+      "createdAt": "2026-03-26T16:35:29.261Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit_28d8fa2c-2d18-41dd-b799-a2efddcc708b",
+      "adminId": "u_b61c594f-11a7-49a3-bd48-8b7e94f7bf04",
+      "action": "simulate",
+      "entity": "draw",
+      "entityId": "d_cdded3a1-0f4a-49fa-a923-cffaaf91b26e",
+      "metadata": {
+        "monthKey": "2026-04",
+        "mode": "algorithmic",
+        "numbers": [
+          31,
+          32,
+          33,
+          34,
+          36
+        ]
+      },
+      "createdAt": "2026-03-26T16:35:29.321Z"
+    }
+  ]
 }

@@ -14,6 +14,7 @@
       .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
       pre { white-space: pre-wrap; background: #0d1328; padding: 12px; border-radius: 10px; border: 1px solid #2d3a64; }
       .muted { color: #b8c2e2; }
+      #token { display: inline-block; max-width: 100%; overflow-wrap: anywhere; color: #7ef0c9; font-weight: 600; }
     </style>
   </head>
   <body>
@@ -73,10 +74,25 @@
     </div>
 
     <script>
-      let token = localStorage.getItem('token') || '';
-      document.getElementById('token').textContent = token;
+      const els = {
+        name: document.getElementById('name'),
+        email: document.getElementById('email'),
+        password: document.getElementById('password'),
+        role: document.getElementById('role'),
+        token: document.getElementById('token'),
+        plan: document.getElementById('plan'),
+        charityPercent: document.getElementById('charityPercent'),
+        score: document.getElementById('score'),
+        playedOn: document.getElementById('playedOn'),
+        drawMode: document.getElementById('drawMode'),
+        drawId: document.getElementById('drawId'),
+        out: document.getElementById('out')
+      };
 
-      const out = (x) => document.getElementById('out').textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
+      let token = localStorage.getItem('token') || '';
+      els.token.textContent = token;
+
+      const out = (x) => els.out.textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
       const authHeaders = () => token ? { 'Authorization': `Bearer ${token}` } : {};
 
       async function request(url, method = 'GET', body) {
@@ -93,30 +109,51 @@
       async function signup() {
         try {
           const data = await request('/api/auth/signup', 'POST', {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-            role: role.value
+            name: els.name.value,
+            email: els.email.value,
+            password: els.password.value,
+            role: els.role.value
           });
-          out(data);
-        } catch (e) { out(e); }
+
+          // Auto-login after signup so token is immediately visible in the Token area.
+          const loginData = await request('/api/auth/login', 'POST', {
+            email: els.email.value,
+            password: els.password.value
+          });
+          token = loginData.token;
+          localStorage.setItem('token', token);
+          els.token.textContent = token;
+
+          alert('Signup successful and logged in. Token is now visible.');
+          out({ signup: data, login: loginData });
+        } catch (e) {
+          alert(`Signup failed: ${e.error || 'Unknown error'}`);
+          out(e);
+        }
       }
 
       async function login() {
         try {
-          const data = await request('/api/auth/login', 'POST', { email: email.value, password: password.value });
+          const data = await request('/api/auth/login', 'POST', {
+            email: els.email.value,
+            password: els.password.value
+          });
           token = data.token;
           localStorage.setItem('token', token);
-          document.getElementById('token').textContent = token;
+          els.token.textContent = token;
+          alert('Login successful. Token is now visible on screen.');
           out(data);
-        } catch (e) { out(e); }
+        } catch (e) {
+          alert(`Login failed: ${e.error || 'Unknown error'}`);
+          out(e);
+        }
       }
 
       async function activateSub() {
         try {
           const data = await request('/api/subscriptions/activate', 'POST', {
-            plan: plan.value,
-            charityPercent: Number(charityPercent.value)
+            plan: els.plan.value,
+            charityPercent: Number(els.charityPercent.value)
           });
           out(data);
         } catch (e) { out(e); }
@@ -125,8 +162,8 @@
       async function addScore() {
         try {
           const data = await request('/api/scores', 'POST', {
-            score: Number(score.value),
-            playedOn: playedOn.value
+            score: Number(els.score.value),
+            playedOn: els.playedOn.value
           });
           out(data);
         } catch (e) { out(e); }
@@ -137,11 +174,11 @@
       }
 
       async function simulateDraw() {
-        try { out(await request('/api/admin/draws/simulate', 'POST', { mode: drawMode.value })); } catch (e) { out(e); }
+        try { out(await request('/api/admin/draws/simulate', 'POST', { mode: els.drawMode.value })); } catch (e) { out(e); }
       }
 
       async function publishDraw() {
-        try { out(await request(`/api/admin/draws/${drawId.value}/publish`, 'POST')); } catch (e) { out(e); }
+        try { out(await request(`/api/admin/draws/${els.drawId.value}/publish`, 'POST')); } catch (e) { out(e); }
       }
     </script>
   </body>

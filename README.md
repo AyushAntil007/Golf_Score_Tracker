@@ -1,73 +1,56 @@
-# Golf Charity Subscription Platform (Working MVP)
+# Golf Charity Subscription Platform
 
-This is a runnable MVP implementation for the assignment.
+This project is a runnable Node.js MVP for a subscription-led golf scoring, charity contribution, and monthly draw platform.
 
-## Implemented Features
+## What the backend now covers
 
-- User signup/login with role support (`subscriber`, `admin`)
-- Subscription activation (`monthly` / `yearly`) with minimum 10% charity contribution
-- Score entry with validation (1–45) and automatic latest-5 retention
-- Charity listing + admin charity creation
-- Draw simulation (`random` / `algorithmic`) and publish flow
-- Winner generation for 3/4/5 match tiers
-- Winner proof submission + admin verify + mark paid
-- Admin overview report endpoint
-- Simple web UI for manual end-to-end demo
+- Signup/login with `subscriber` and `admin` roles
+- Subscription activation and cancellation for `monthly` and `yearly` plans
+- Charity selection with a minimum 10% contribution
+- Independent charity donations
+- Stableford score entry, edit, delete, and automatic rolling latest-5 retention
+- Subscriber dashboard payload with subscription, charity, scores, draw participation, and winnings
+- Draw simulation and publish flow with:
+  - random mode
+  - algorithmic mode based on score frequency
+  - 3/4/5-match winner detection
+  - prize pool snapshots
+  - 5-match jackpot rollover
+- Winner proof submission, admin verification, and payout state updates
+- Admin charity, user, subscription, dashboard, and reporting endpoints
 
-## Run
+## Run locally
 
 ```bash
 npm run dev
 ```
 
-Open: `http://localhost:3000`
+The app starts on `http://localhost:3000` and will move to the next port if 3000 is already busy.
 
-## Data (store format)
+## Data store
 
-All data is stored in `data/store.json`.
+All application data is stored in `data/store.json`.
 
-### Top-level keys
+Key collections:
+- `users`
+- `sessions`
+- `charities`
+- `subscriptions`
+- `scores`
+- `draws`
+- `drawEntries`
+- `prizePoolSnapshots`
+- `winners`
+- `donations`
+- `auditLogs`
 
-- `users`: registered users (`subscriber` or `admin`)
-- `sessions`: active login tokens
-- `charities`: charity directory entries
-- `subscriptions`: plan/status/renewal + charity percentage
-- `scores`: user score history
-- `draws`: simulated/published monthly draws
-- `winners`: winners and verification/payment states
-- `donations`: standalone donation records (reserved for extension)
+## Main docs
 
-### Example record shapes
+- `docs/api-spec.md`
+- `docs/architecture.md`
+- `docs/database-schema.sql`
+- `docs/mvp-delivery-plan.md`
 
-```json
-{
-  "users": [{ "id": "u_x", "email": "a@b.com", "passwordHash": "...", "role": "subscriber" }],
-  "subscriptions": [{ "userId": "u_x", "plan": "monthly", "status": "active", "charityPercent": 10 }],
-  "scores": [{ "id": "s_x", "userId": "u_x", "score": 34, "playedOn": "2026-03-01" }],
-  "draws": [{ "id": "d_x", "monthKey": "2026-03", "mode": "random", "status": "published", "numbers": [3,8,14,22,41] }],
-  "winners": [{ "id": "w_x", "drawId": "d_x", "userId": "u_x", "matchTier": 3, "prizeAmount": 25, "verificationStatus": "pending", "payoutStatus": "pending" }]
-}
-```
+## Important limitation
 
-## API Quick List
-
-- `POST /api/auth/signup`
-- `POST /api/auth/login`
-- `GET /api/me`
-- `POST /api/subscriptions/activate`
-- `GET /api/charities`
-- `POST /api/admin/charities`
-- `GET /api/scores`
-- `POST /api/scores`
-- `POST /api/admin/draws/simulate`
-- `POST /api/admin/draws/:id/publish`
-- `GET /api/winners/me`
-- `POST /api/winners/:id/proof`
-- `POST /api/admin/winners/:id/verify`
-- `POST /api/admin/winners/:id/mark-paid`
-- `GET /api/admin/reports/overview`
-
-## Important Notes
-
-- This is an assignment MVP with a JSON file datastore (`data/store.json`) for quick setup.
-- Stripe/Supabase integration can be added as the next step if required by evaluation.
+This MVP models payments and storage internally. Stripe checkout, Stripe webhooks, file upload infrastructure, email delivery, and deployment to Vercel/Supabase are still the next integration layer rather than part of the current local server.

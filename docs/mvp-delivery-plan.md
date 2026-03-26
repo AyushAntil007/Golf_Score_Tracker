@@ -1,50 +1,47 @@
-# 8-Week MVP Delivery Plan
+# MVP Delivery Plan
 
-## Week 1: Foundation
-- Project setup (frontend/backend), linting, CI
-- Auth + role model
-- Initial DB schema migration
+## Implemented logic coverage
 
-## Week 2: Subscription System
-- Stripe plan setup (monthly/yearly)
-- Checkout + webhook handling
-- Subscription state sync and middleware guard
+### Subscription and payment modeling
+- Monthly and yearly plans are supported
+- Subscribers store active, inactive, canceled, past-due, or incomplete style states
+- Authenticated requests normalize lapsed subscriptions in real time
+- Charity percentage is enforced at a minimum of 10%
 
-## Week 3: Charity Module
-- Charity CRUD (admin)
-- Public charity directory + detail page
-- User charity preference at onboarding
+### Score management
+- Stableford score validation enforces `1-45`
+- Every score requires a round date
+- Only the most recent 5 scores are retained
+- Score lists are returned in reverse chronological order
 
-## Week 4: Scores + User Dashboard
-- Score CRUD with 5-score rolling retention
-- Dashboard cards: subscription, score history, participation summary
+### Draw and reward engine
+- Monthly draw records use a `YYYY-MM` month key
+- Admins can simulate a draw before publishing it
+- Draw generation supports random and algorithmic modes
+- Publishing a draw creates entries from each eligible subscriber's latest 5 scores
+- 3-match, 4-match, and 5-match winners are calculated automatically
+- 5-match pools roll forward when no jackpot winner exists
 
-## Week 5: Draw Engine
-- Simulation mode (random + algorithmic)
-- Publish mode + final draw record
-- Winner tier matching and payout splitting logic
+### Charity system
+- Public charity directory and charity detail endpoints are available
+- Subscribers can set or update their chosen charity and contribution percentage
+- Independent donations are tracked separately from subscription-linked donations
 
-## Week 6: Verification + Payouts
-- Proof upload flow (storage)
-- Admin review action (approve/reject)
-- Payout state updates and timeline
+### Winner verification
+- Winners can submit a proof URL
+- Admins can approve or reject proof submissions
+- Approved winners can be marked paid
 
-## Week 7: Admin Panel + Reports
-- User management and score moderation
-- Draw management UI
-- Reports: users, pools, charity totals, draw stats
+### Admin controls
+- Charity create, update, and archive flows exist
+- Admins can view and edit users
+- Admins can adjust subscription details
+- Dashboard and reporting endpoints expose totals, charity contribution summaries, and draw statistics
 
-## Week 8: QA, UX Polish, Deployment
-- Full PRD checklist pass
-- Responsive design and micro-interactions
-- Deploy to new Vercel + new Supabase
-- Demo credentials + walkthrough recording
+## Still treated as next-phase integration
 
-## Definition of Done (Assignment)
-- All mandatory modules work end-to-end
-- Monthly/yearly subscription test flow passes
-- Score rollover logic verified by tests
-- Draw simulation and publish are both demonstrable
-- Winner verification and payout states are functional
-- Public URL + admin credentials + user credentials provided
-
+- Stripe checkout sessions and webhook reconciliation
+- Real proof file uploads with signed storage URLs
+- Email notifications
+- Production deployment to Vercel and Supabase
+- Frontend dashboards that fully exercise every endpoint
