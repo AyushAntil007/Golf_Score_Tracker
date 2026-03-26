@@ -1,0 +1,13 @@
+{
+  "users": [],
+  "sessions": [],
+  "charities": [
+    { "id": "c1", "name": "First Tee", "description": "Youth golf and life skills", "featured": true },
+    { "id": "c2", "name": "Golf For Good", "description": "Community golf development", "featured": false }
+  ],
+  "subscriptions": [],
+  "scores": [],
+  "draws": [],
+  "winners": [],
+  "donations": []
+}

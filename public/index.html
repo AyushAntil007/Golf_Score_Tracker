@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Golf Charity Subscription Platform</title>
+    <style>
+      body { font-family: Inter, Arial, sans-serif; margin: 0; background: #0b1020; color: #eef3ff; }
+      .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+      .card { background: #151c33; border: 1px solid #2d3a64; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+      h1, h2 { margin-top: 0; }
+      input, select, button, textarea { padding: 8px 10px; margin: 4px; border-radius: 8px; border: 1px solid #42548d; background: #0e1530; color: #fff; }
+      button { cursor: pointer; background: #2f6dff; border: none; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      pre { white-space: pre-wrap; background: #0d1328; padding: 12px; border-radius: 10px; border: 1px solid #2d3a64; }
+      .muted { color: #b8c2e2; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Golf Charity Subscription Platform (MVP)</h1>
+      <p class="muted">Auth, subscription, score management, draws, winner verification, admin controls.</p>
+
+      <div class="card">
+        <h2>1) Signup / Login</h2>
+        <div class="row">
+          <input id="name" placeholder="Name" />
+          <input id="email" placeholder="Email" />
+          <input id="password" placeholder="Password" type="password" />
+          <select id="role">
+            <option value="subscriber">subscriber</option>
+            <option value="admin">admin</option>
+          </select>
+          <button onclick="signup()">Signup</button>
+          <button onclick="login()">Login</button>
+        </div>
+        <div>Token: <code id="token"></code></div>
+      </div>
+
+      <div class="card">
+        <h2>2) Activate Subscription</h2>
+        <div class="row">
+          <select id="plan"><option value="monthly">monthly</option><option value="yearly">yearly</option></select>
+          <input id="charityPercent" type="number" value="10" min="10" max="100" />
+          <button onclick="activateSub()">Activate</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3) Add Score (1-45, keeps latest 5)</h2>
+        <div class="row">
+          <input id="score" type="number" min="1" max="45" placeholder="Score" />
+          <input id="playedOn" type="date" />
+          <button onclick="addScore()">Add Score</button>
+          <button onclick="listScores()">Refresh Scores</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>4) Admin Draw Controls</h2>
+        <div class="row">
+          <select id="drawMode"><option value="random">random</option><option value="algorithmic">algorithmic</option></select>
+          <button onclick="simulateDraw()">Simulate Draw</button>
+          <input id="drawId" placeholder="Draw ID to publish" />
+          <button onclick="publishDraw()">Publish Draw</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Output</h2>
+        <pre id="out">Ready.</pre>
+      </div>
+    </div>
+
+    <script>
+      let token = localStorage.getItem('token') || '';
+      document.getElementById('token').textContent = token;
+
+      const out = (x) => document.getElementById('out').textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
+      const authHeaders = () => token ? { 'Authorization': `Bearer ${token}` } : {};
+
+      async function request(url, method = 'GET', body) {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json', ...authHeaders() },
+          body: body ? JSON.stringify(body) : undefined
+        });
+        const data = await res.json();
+        if (!res.ok) throw data;
+        return data;
+      }
+
+      async function signup() {
+        try {
+          const data = await request('/api/auth/signup', 'POST', {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            role: role.value
+          });
+          out(data);
+        } catch (e) { out(e); }
+      }
+
+      async function login() {
+        try {
+          const data = await request('/api/auth/login', 'POST', { email: email.value, password: password.value });
+          token = data.token;
+          localStorage.setItem('token', token);
+          document.getElementById('token').textContent = token;
+          out(data);
+        } catch (e) { out(e); }
+      }
+
+      async function activateSub() {
+        try {
+          const data = await request('/api/subscriptions/activate', 'POST', {
+            plan: plan.value,
+            charityPercent: Number(charityPercent.value)
+          });
+          out(data);
+        } catch (e) { out(e); }
+      }
+
+      async function addScore() {
+        try {
+          const data = await request('/api/scores', 'POST', {
+            score: Number(score.value),
+            playedOn: playedOn.value
+          });
+          out(data);
+        } catch (e) { out(e); }
+      }
+
+      async function listScores() {
+        try { out(await request('/api/scores')); } catch (e) { out(e); }
+      }
+
+      async function simulateDraw() {
+        try { out(await request('/api/admin/draws/simulate', 'POST', { mode: drawMode.value })); } catch (e) { out(e); }
+      }
+
+      async function publishDraw() {
+        try { out(await request(`/api/admin/draws/${drawId.value}/publish`, 'POST')); } catch (e) { out(e); }
+      }
+    </script>
+  </body>
+</html>
