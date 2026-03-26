@@ -1,0 +1,10 @@
+{
+  "name": "golf-charity-subscription-platform",
+  "version": "1.0.0",
+  "description": "Golf Charity Subscription Platform MVP",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js"
+  }
+}
