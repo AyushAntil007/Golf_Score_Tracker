@@ -107,11 +107,11 @@ function logAdminAction(db, adminId, action, entity, entityId, metadata = {}) {
   });
 }
 
-function auth(req) {
+async function auth(req) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return { error: 'Missing token' };
 
-  const db = readStore();
+  const db = await readStore();
   const session = db.sessions.find((entry) => entry.token === token);
   if (!session) return { error: 'Invalid token' };
 
@@ -119,7 +119,7 @@ function auth(req) {
   if (!user) return { error: 'Invalid user' };
 
   normalizeSubscription(getSubscriptionByUser(db, user.id));
-  writeStore(db);
+  await writeStore(db);
 
   return { db, user };
 }
@@ -313,7 +313,7 @@ const server = http.createServer(async (req, res) => {
 
     if (!email || !password) return sendJson(res, 400, { error: 'email + password required' });
 
-    const db = readStore();
+    const db = await readStore();
     if (db.users.some((user) => user.email.toLowerCase() === email)) {
       return sendJson(res, 409, { error: 'Email already in use' });
     }
@@ -341,14 +341,14 @@ const server = http.createServer(async (req, res) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    writeStore(db);
+    await writeStore(db);
 
     return sendJson(res, 201, sanitizeUser(user));
   }
 
   if (req.method === 'POST' && pathname === '/api/auth/login') {
     const body = await parseJson(req);
-    const db = readStore();
+    const db = await readStore();
     const email = String(body.email || '').trim().toLowerCase();
     const password = String(body.password || '');
     const user = db.users.find((entry) => entry.email.toLowerCase() === email);
@@ -363,7 +363,7 @@ const server = http.createServer(async (req, res) => {
       userId: user.id,
       createdAt: new Date().toISOString()
     });
-    writeStore(db);
+    await writeStore(db);
 
     return sendJson(res, 200, {
       token,
@@ -373,7 +373,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/charities') {
-    const db = readStore();
+    const db = await readStore();
     const featuredOnly = url.searchParams.get('featured') === 'true';
     const search = String(url.searchParams.get('search') || '').trim().toLowerCase();
 
@@ -389,7 +389,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname.match(/^\/api\/charities\/[^/]+$/)) {
-    const db = readStore();
+    const db = await readStore();
     const charityId = pathname.split('/')[3];
     const charity = getCharity(db, charityId);
     if (!charity) return sendJson(res, 404, { error: 'Charity not found' });
@@ -403,38 +403,38 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/me') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     return sendJson(res, 200, buildSubscriberDashboard(ctx.db, ctx.user));
   }
 
   if (req.method === 'PATCH' && pathname === '/api/me') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const body = await parseJson(req);
     ctx.user.name = String(body.name || ctx.user.name || '').trim();
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, { user: sanitizeUser(ctx.user) });
   }
 
   if (req.method === 'GET' && pathname === '/api/dashboard') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     return sendJson(res, 200, buildSubscriberDashboard(ctx.db, ctx.user));
   }
 
   if (req.method === 'GET' && pathname === '/api/subscriptions/current') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     return sendJson(res, 200, { subscription: getSubscriptionState(ctx.db, ctx.user.id) });
   }
 
   if (req.method === 'POST' && pathname === '/api/subscriptions/activate') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const body = await parseJson(req);
@@ -475,7 +475,7 @@ const server = http.createServer(async (req, res) => {
       createdAt: now.toISOString()
     });
 
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, {
       subscription,
       contribution: {
@@ -487,7 +487,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'POST' && pathname === '/api/subscriptions/cancel') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const subscription = getSubscriptionByUser(ctx.db, ctx.user.id);
@@ -497,13 +497,13 @@ const server = http.createServer(async (req, res) => {
 
     subscription.cancelAtPeriodEnd = true;
     subscription.updatedAt = new Date().toISOString();
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, { subscription });
   }
 
   if (req.method === 'POST' && pathname === '/api/me/charity-preference') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const body = await parseJson(req);
@@ -519,13 +519,13 @@ const server = http.createServer(async (req, res) => {
     subscription.charityId = charityId;
     subscription.charityPercent = charityPercent;
     subscription.updatedAt = new Date().toISOString();
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, { subscription });
   }
 
   if (req.method === 'POST' && pathname === '/api/donations') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const body = await parseJson(req);
@@ -544,20 +544,20 @@ const server = http.createServer(async (req, res) => {
       createdAt: new Date().toISOString()
     };
     ctx.db.donations.push(donation);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 201, donation);
   }
 
   if (req.method === 'GET' && pathname === '/api/scores') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     return sendJson(res, 200, getUserScoresDescending(ctx.db, ctx.user.id));
   }
 
   if (req.method === 'POST' && pathname === '/api/scores') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const subscriptionCheck = requireActiveSubscription(ctx);
@@ -583,7 +583,7 @@ const server = http.createServer(async (req, res) => {
     };
     ctx.db.scores.push(newScore);
     enforceLatestFiveScores(ctx.db, ctx.user.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 201, {
       message: 'Score added',
@@ -593,7 +593,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'PATCH' && pathname.match(/^\/api\/scores\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const subscriptionCheck = requireActiveSubscription(ctx);
@@ -619,12 +619,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     enforceLatestFiveScores(ctx.db, ctx.user.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, { score: record, latestScores: getUserScoresDescending(ctx.db, ctx.user.id) });
   }
 
   if (req.method === 'DELETE' && pathname.match(/^\/api\/scores\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const scoreId = pathname.split('/')[3];
@@ -632,12 +632,12 @@ const server = http.createServer(async (req, res) => {
     ctx.db.scores = ctx.db.scores.filter((score) => !(score.id === scoreId && score.userId === ctx.user.id));
     if (beforeCount === ctx.db.scores.length) return sendJson(res, 404, { error: 'Score not found' });
 
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, { message: 'Score deleted', latestScores: getUserScoresDescending(ctx.db, ctx.user.id) });
   }
 
   if (req.method === 'GET' && pathname === '/api/draws/upcoming') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const monthKey = getMonthKey();
@@ -653,7 +653,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/draws/history') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     return sendJson(res, 200, ctx.db.draws
@@ -662,7 +662,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname.match(/^\/api\/draws\/[^/]+\/result$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const drawId = pathname.split('/')[3];
@@ -678,14 +678,14 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/draws') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     return sendJson(res, 200, ctx.db.draws.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
   }
 
   if (req.method === 'POST' && pathname === '/api/admin/charities') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -704,13 +704,13 @@ const server = http.createServer(async (req, res) => {
     };
     ctx.db.charities.push(charity);
     logAdminAction(ctx.db, ctx.user.id, 'create', 'charity', charity.id, { name: charity.name });
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 201, charity);
   }
 
   if (req.method === 'PATCH' && pathname.match(/^\/api\/admin\/charities\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -727,12 +727,12 @@ const server = http.createServer(async (req, res) => {
     if (body.upcomingEvents !== undefined) charity.upcomingEvents = Array.isArray(body.upcomingEvents) ? body.upcomingEvents.slice(0, 5) : [];
 
     logAdminAction(ctx.db, ctx.user.id, 'update', 'charity', charity.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, charity);
   }
 
   if (req.method === 'DELETE' && pathname.match(/^\/api\/admin\/charities\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -743,12 +743,12 @@ const server = http.createServer(async (req, res) => {
     charity.isActive = false;
     charity.featured = false;
     logAdminAction(ctx.db, ctx.user.id, 'archive', 'charity', charity.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, charity);
   }
 
   if (req.method === 'GET' && pathname === '/api/admin/users') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -763,7 +763,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'PATCH' && pathname.match(/^\/api\/admin\/users\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -775,13 +775,13 @@ const server = http.createServer(async (req, res) => {
     if (body.name !== undefined) user.name = String(body.name || '').trim();
     if (body.role !== undefined && ['subscriber', 'admin'].includes(body.role)) user.role = body.role;
     logAdminAction(ctx.db, ctx.user.id, 'update', 'user', user.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, sanitizeUser(user));
   }
 
   if (req.method === 'PATCH' && pathname.match(/^\/api\/admin\/subscriptions\/[^/]+$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -807,12 +807,12 @@ const server = http.createServer(async (req, res) => {
 
     subscription.updatedAt = new Date().toISOString();
     logAdminAction(ctx.db, ctx.user.id, 'update', 'subscription', userId, { status: subscription.status });
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 200, subscription);
   }
 
   if (req.method === 'POST' && pathname === '/api/admin/draws/simulate') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -858,12 +858,12 @@ const server = http.createServer(async (req, res) => {
     });
 
     logAdminAction(ctx.db, ctx.user.id, 'simulate', 'draw', draw.id, { monthKey, mode, numbers });
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
     return sendJson(res, 201, { draw, prizePool: getPrizePoolSnapshot(ctx.db, draw.id) });
   }
 
   if (req.method === 'POST' && pathname.match(/^\/api\/admin\/draws\/[^/]+\/publish$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -925,7 +925,7 @@ const server = http.createServer(async (req, res) => {
       entries: entries.length,
       winners: ctx.db.winners.filter((winner) => winner.drawId === draw.id).length
     });
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, {
       draw,
@@ -936,7 +936,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname.match(/^\/api\/admin\/draws\/[^/]+\/winners$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -949,13 +949,13 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/winners/me') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     return sendJson(res, 200, ctx.db.winners.filter((winner) => winner.userId === ctx.user.id));
   }
 
   if (req.method === 'POST' && pathname.match(/^\/api\/winners\/[^/]+\/proof$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
 
     const winnerId = pathname.split('/')[3];
@@ -969,13 +969,13 @@ const server = http.createServer(async (req, res) => {
     winner.proofUrl = proofUrl;
     winner.verificationStatus = 'pending';
     winner.proofSubmittedAt = new Date().toISOString();
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, { message: 'Proof submitted', winner });
   }
 
   if (req.method === 'POST' && pathname.match(/^\/api\/admin\/winners\/[^/]+\/verify$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -992,13 +992,13 @@ const server = http.createServer(async (req, res) => {
     winner.verifiedBy = ctx.user.id;
     winner.verifiedAt = new Date().toISOString();
     logAdminAction(ctx.db, ctx.user.id, body.action, 'winner', winner.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, winner);
   }
 
   if (req.method === 'POST' && pathname.match(/^\/api\/admin\/winners\/[^/]+\/mark-paid$/)) {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -1012,20 +1012,20 @@ const server = http.createServer(async (req, res) => {
     winner.payoutStatus = 'paid';
     winner.paidAt = new Date().toISOString();
     logAdminAction(ctx.db, ctx.user.id, 'mark_paid', 'winner', winner.id);
-    writeStore(ctx.db);
+    await writeStore(ctx.db);
 
     return sendJson(res, 200, winner);
   }
 
   if (req.method === 'GET' && pathname === '/api/admin/dashboard') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
     return sendJson(res, 200, buildAdminDashboard(ctx.db));
   }
 
   if (req.method === 'GET' && pathname === '/api/admin/reports/overview') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -1043,7 +1043,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/admin/reports/charity-contributions') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 
@@ -1063,7 +1063,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && pathname === '/api/admin/reports/draw-stats') {
-    const ctx = auth(req);
+    const ctx = await auth(req);
     if (ctx.error) return sendJson(res, 401, { error: ctx.error });
     if (!requireAdmin(ctx)) return sendJson(res, 403, { error: 'Admin only' });
 

@@ -64,6 +64,14 @@
       "name": "Ayush",
       "passwordHash": "c44827ec45355e9a48f90e25fd62b8ba44bd8f9ba57130632880b1d0224f111a",
       "role": "admin"
+    },
+    {
+      "id": "u_bfb472a9-a467-4a4c-8be5-977587f3eb15",
+      "email": "supa-1774545080041@example.com",
+      "name": "Supa Smoke",
+      "passwordHash": "46708f23d682fef9aa996ecbb139bfb6c9ffdc039905ad6ad5c85a88b9411d97",
+      "role": "subscriber",
+      "createdAt": "2026-03-26T17:11:20.243Z"
     }
   ],
   "sessions": [
@@ -96,6 +104,11 @@
       "token": "t_1870b7b8-43bf-4222-864e-59def009685b",
       "userId": "u_5f2de322-59aa-4b96-8bb4-9e0ea4e227a1",
       "createdAt": "2026-03-26T16:41:23.847Z"
+    },
+    {
+      "token": "t_964f9602-cc3a-4e73-a967-02c49b77c625",
+      "userId": "u_bfb472a9-a467-4a4c-8be5-977587f3eb15",
+      "createdAt": "2026-03-26T17:11:20.278Z"
     }
   ],
   "charities": [
@@ -192,6 +205,18 @@
       "renewalDate": "2026-04-26",
       "charityPercent": 10,
       "charityId": "c1"
+    },
+    {
+      "userId": "u_bfb472a9-a467-4a4c-8be5-977587f3eb15",
+      "plan": "monthly",
+      "status": "active",
+      "renewalDate": "2026-04-26",
+      "charityPercent": 15,
+      "charityId": "c1",
+      "cancelAtPeriodEnd": false,
+      "gateway": "demo",
+      "createdAt": "2026-03-26T17:11:20.243Z",
+      "updatedAt": "2026-03-26T17:11:20.288Z"
     }
   ],
   "scores": [
@@ -331,6 +356,14 @@
       "amount": 3,
       "source": "subscription",
       "createdAt": "2026-03-26T16:35:29.261Z"
+    },
+    {
+      "id": "don_ab3271be-37d0-4fb8-b1b7-c12a83172a27",
+      "userId": "u_bfb472a9-a467-4a4c-8be5-977587f3eb15",
+      "charityId": "c1",
+      "amount": 3.75,
+      "source": "subscription",
+      "createdAt": "2026-03-26T17:11:20.288Z"
     }
   ],
   "auditLogs": [

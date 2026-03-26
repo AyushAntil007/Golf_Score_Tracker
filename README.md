@@ -27,6 +27,18 @@ npm run dev
 
 The app starts on `http://localhost:3000` and will move to the next port if 3000 is already busy.
 
+## Supabase setup
+
+1. Create a `.env` file based on `.env.example`.
+2. Add your Supabase project values for:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+3. In the Supabase SQL editor, run [docs/supabase-state-schema.sql](docs/supabase-state-schema.sql).
+4. Restart the server.
+
+When these environment variables are present, the app uses Supabase as its primary persistence layer and keeps `data/store.json` as a local mirror/fallback cache.
+
 ## Workflow
 
 1. Create a subscriber account.
@@ -59,7 +71,7 @@ The app starts on `http://localhost:3000` and will move to the next port if 3000
 
 ## Data store
 
-All application data is stored in `data/store.json`.
+Application data is stored in Supabase when configured, with `data/store.json` kept as a local mirror and fallback. If Supabase env vars are missing, the app runs entirely from `data/store.json`.
 
 Key collections:
 - `users`
@@ -79,8 +91,9 @@ Key collections:
 - `docs/api-spec.md`
 - `docs/architecture.md`
 - `docs/database-schema.sql`
+- `docs/supabase-state-schema.sql`
 - `docs/mvp-delivery-plan.md`
 
 ## Important limitation
 
-This MVP models payments and storage internally. Stripe checkout, Stripe webhooks, file upload infrastructure, email delivery, and deployment to Vercel/Supabase are still the next integration layer rather than part of the current local server.
+This MVP now supports Supabase-backed persistence, but it still uses a custom Node HTTP server rather than a Vercel-native serverless or Next.js structure. Stripe checkout, Stripe webhooks, file upload infrastructure, email delivery, and a full Vercel-ready app architecture are still next-step work.
